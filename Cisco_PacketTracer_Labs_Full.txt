@@ -1,0 +1,697 @@
+CISCO PACKET TRACER LAB COLLECTION - FULL
+Format: For each lab: Objective, Devices, Port connections, Suggested steps, Sample commands, Hints.
+Language: English
+Count: 30 labs (15 Easy, 10 Medium, 5 Hard) + 1 Final Project (Realistic and Hard)
+
+========================================
+LEVEL: EASY (BASIC) - 15 LABS
+========================================
+
+Lab 1: Basic LAN Connectivity
+- Objective:
+  Connect two PCs using a switch. Assign static IPs and verify connectivity.
+- Devices:
+  2 x PC, 1 x 2960 Switch, cables (Copper Straight-Through)
+- Port connections:
+  PC1 Fa0 -> Switch Fa0/1
+  PC2 Fa0 -> Switch Fa0/2
+- Suggested steps:
+  1. Connect devices per port connections.
+  2. On PC1 set IP 192.168.1.10/24, gateway 192.168.1.1 (optional).
+  3. On PC2 set IP 192.168.1.11/24.
+  4. Ping from PC1 to PC2.
+- Sample commands:
+  (PC GUI) Configure IP on each PC.
+- Hints:
+  Use "ipconfig" in PC CLI to check IP settings.
+
+--------------------------------------------------
+Lab 2: Configure Switch Hostname and Password
+- Objective:
+  Basic switch management: set hostname, console and enable password, banner.
+- Devices:
+  1 x Switch, 1 x PC (Console via RS232)
+- Port connections:
+  PC RS232 -> Switch Console
+- Suggested steps:
+  1. Open console session on switch.
+  2. Enter global config. Set hostname, console password, enable secret, banner.
+  3. Save configuration.
+- Sample commands:
+  Switch> enable
+  Switch# configure terminal
+  Switch(config)# hostname SW1
+  SW1(config)# enable secret MyEnablePass
+  SW1(config)# line console 0
+  SW1(config-line)# password MyConsolePass
+  SW1(config-line)# login
+  SW1(config)# banner motd #Authorized access only#
+  SW1(config)# exit
+  SW1# write memory
+- Hints:
+  Use "show running-config" to verify changes.
+
+--------------------------------------------------
+Lab 3: Configure Router Interface
+- Objective:
+  Configure a router interface with IP and bring it up.
+- Devices:
+  1 x Router (ISR), 1 x Switch, 1 x PC
+- Port connections:
+  PC Fa0 -> Switch Fa0/1
+  Switch Fa0/24 -> Router Gig0/0
+- Suggested steps:
+  1. Configure router Gig0/0 with IP 192.168.10.1/24 and "no shutdown".
+  2. Configure PC in same subnet and ping router.
+- Sample commands (Router):
+  Router> enable
+  Router# configure terminal
+  Router(config)# interface GigabitEthernet0/0
+  Router(config-if)# ip address 192.168.10.1 255.255.255.0
+  Router(config-if)# no shutdown
+  Router(config-if)# exit
+  Router# write memory
+- Hints:
+  If interface is down, check cable type. Use "show ip interface brief".
+
+--------------------------------------------------
+Lab 4: Default Gateway for PC Network
+- Objective:
+  Configure default gateway on PC and verify external ping to router.
+- Devices:
+  1 x Router, 1 x Switch, 2 x PC
+- Port connections:
+  PC1 Fa0 -> SW Fa0/1; PC2 Fa0 -> SW Fa0/2; SW Fa0/24 -> Router G0/0
+- Suggested steps:
+  1. Router G0/0 ip 10.0.0.1/24. PCs 10.0.0.10 and 10.0.0.11.
+  2. Set default gateway in PC to 10.0.0.1.
+  3. Test ping to router and between PCs.
+- Sample commands: (Router see Lab 3)
+- Hints:
+  Gateway must be in same subnet as PCs.
+
+--------------------------------------------------
+Lab 5: Static Routing Between Two Routers
+- Objective:
+  Configure static routes to enable connectivity between two separate LANs.
+- Devices:
+  2 x Routers, 2 x Switches, 2 x PC
+- Port connections (example):
+  R1 G0/0 -> SW1 Fa0/24; PC1 -> SW1 Fa0/1
+  R2 G0/0 -> SW2 Fa0/24; PC2 -> SW2 Fa0/1
+  R1 G0/1 -> R2 G0/1 (serial or crossover)
+- Suggested steps:
+  1. Assign IPs on LAN interfaces (192.168.1.1/24 and 192.168.2.1/24).
+  2. Create link network between routers (10.0.0.0/30).
+  3. Add static routes on R1 and R2 to reach the opposite LAN.
+  4. Test ping PC1 <-> PC2.
+- Sample commands (R1):
+  R1(config)# interface g0/0
+  R1(config-if)# ip address 192.168.1.1 255.255.255.0
+  R1(config-if)# no shutdown
+  R1(config)# interface g0/1
+  R1(config-if)# ip address 10.0.0.1 255.255.255.252
+  R1(config-if)# no shutdown
+  R1(config)# ip route 192.168.2.0 255.255.255.0 10.0.0.2
+- Sample commands (R2 similar with route to 192.168.1.0)
+- Hints:
+  Use /30 for point-to-point to conserve addresses.
+
+--------------------------------------------------
+Lab 6: Basic Subnetting Exercise
+- Objective:
+  Design subnets from a /24 network to create multiple smaller subnets and assign them.
+- Devices:
+  1 x Router, 1 x Switch, multiple PCs
+- Port connections:
+  Each PC to a switch access port; router interface per subnet (or subinterfaces)
+- Suggested steps:
+  1. Given network 192.168.100.0/24 split into subnets for three departments.
+  2. Assign addresses and test connectivity with routing.
+- Sample commands:
+  Use static addressing or router-on-a-stick if multiple VLANs.
+- Hints:
+  Solve subnetting on paper first. Example splits: /26, /26, /26 and remainder.
+
+--------------------------------------------------
+Lab 7: VLAN Creation and Assignment
+- Objective:
+  Create VLANs and assign switch ports to VLANs. Verify isolation.
+- Devices:
+  1 x Switch, 3 x PC
+- Port connections:
+  PC1 Fa0 -> SW Fa0/1 (VLAN10)
+  PC2 Fa0 -> SW Fa0/2 (VLAN20)
+  PC3 Fa0 -> SW Fa0/3 (VLAN20)
+- Suggested steps:
+  1. Create VLAN 10 and VLAN 20 on switch.
+  2. Set access ports and assign correct VLANs.
+  3. Configure IP on PCs in corresponding subnets and verify that VLANs are isolated.
+- Sample commands (Switch):
+  SW1# configure terminal
+  SW1(config)# vlan 10
+  SW1(config-vlan)# name SALES
+  SW1(config)# vlan 20
+  SW1(config-vlan)# name HR
+  SW1(config)# interface range fastEthernet0/1
+  SW1(config-if-range)# switchport mode access
+  SW1(config-if-range)# switchport access vlan 10
+  SW1(config)# interface range fastEthernet0/2 - 3
+  SW1(config-if-range)# switchport mode access
+  SW1(config-if-range)# switchport access vlan 20
+  SW1# write memory
+- Hints:
+  Use "show vlan brief" and "show interfaces status".
+
+--------------------------------------------------
+Lab 8: VLAN Trunk Between Two Switches
+- Objective:
+  Configure trunk link to carry multiple VLANs between two switches.
+- Devices:
+  2 x Switch, multiple PCs
+- Port connections:
+  SW1 Fa0/24 -> SW2 Fa0/24 (Trunk)
+- Suggested steps:
+  1. Configure same VLANs on both switches.
+  2. Set trunk ports and verify trunking with "show interfaces trunk".
+- Sample commands (on both switches):
+  SW(config)# interface fa0/24
+  SW(config-if)# switchport trunk encapsulation dot1q
+  SW(config-if)# switchport mode trunk
+  SW(config-if)# switchport trunk allowed vlan 10,20
+- Hints:
+  If dot1q not available, just "switchport mode trunk" on modern IOS.
+
+--------------------------------------------------
+Lab 9: Router-on-a-Stick Inter-VLAN Routing
+- Objective:
+  Provide routing between VLANs using router subinterfaces (802.1Q).
+- Devices:
+  1 x Router, 1 x Layer2 Switch, multiple PCs
+- Port connections:
+  Switch Fa0/1.. -> PCs; Switch Fa0/24 -> Router Gig0/0 (trunk)
+- Suggested steps:
+  1. Create VLANs and assign ports on switch.
+  2. Configure switch port connected to router as trunk.
+  3. Configure router subinterfaces with encapsulation dot1Q and IPs.
+  4. Test ping across VLANs.
+- Sample commands (Router):
+  R(config)# interface g0/0.10
+  R(config-subif)# encapsulation dot1Q 10
+  R(config-subif)# ip address 192.168.10.1 255.255.255.0
+  R(config)# interface g0/0.20
+  R(config-subif)# encapsulation dot1Q 20
+  R(config-subif)# ip address 192.168.20.1 255.255.255.0
+  R(config-if)# no shutdown
+- Sample commands (Switch trunk):
+  SW(config)# interface fa0/24
+  SW(config-if)# switchport mode trunk
+- Hints:
+  Use "show ip route" on router and "show vlan" on switch.
+
+--------------------------------------------------
+Lab 10: DHCP Server on Router
+- Objective:
+  Configure router to act as DHCP server and assign addresses to PCs.
+- Devices:
+  1 x Router, 1 x Switch, PCs
+- Port connections:
+  Standard LAN connections PC -> Switch -> Router
+- Suggested steps:
+  1. Configure DHCP pool on router with network, default-router and DNS.
+  2. Set PCs to DHCP and obtain addresses.
+- Sample commands (Router):
+  R(config)# ip dhcp pool LAN_POOL
+  R(dhcp-config)# network 192.168.50.0 255.255.255.0
+  R(dhcp-config)# default-router 192.168.50.1
+  R(dhcp-config)# dns-server 8.8.8.8
+  R(config)# interface g0/0
+  R(config-if)# ip address 192.168.50.1 255.255.255.0
+  R(config-if)# no shutdown
+- Hints:
+  Use "show ip dhcp binding" to see leases.
+
+--------------------------------------------------
+Lab 11: Configure DNS on Router (Simulated)
+- Objective:
+  Simulate DNS by adding host entries on router and verify name resolution from PCs.
+- Devices:
+  1 x Router, 1 x Switch, PCs
+- Port connections:
+  As LAN topology
+- Suggested steps:
+  1. Configure router with ip host entries for test names.
+  2. On PC, try to resolve names with ping hostname (Packet Tracer simulates DNS lookup to router hosts entries).
+- Sample commands (Router):
+  R(config)# ip host internal-server 192.168.60.10
+  R(config)# ip host www.example 203.0.113.10
+- Hints:
+  Packet Tracer has limited DNS simulation; ip host is a quick method.
+
+--------------------------------------------------
+Lab 12: Secure Remote Access via SSH
+- Objective:
+  Configure SSH access to router/switch and disable telnet.
+- Devices:
+  1 x Router, 1 x Switch, 1 x PC (SSH client)
+- Port connections:
+  PC -> Switch -> Device management interface
+- Suggested steps:
+  1. Configure domain-name, generate RSA keys, create local user, configure line vty to use login local and transport input ssh.
+- Sample commands (Router):
+  R(config)# hostname R1
+  R(config)# ip domain-name lab.local
+  R(config)# username admin privilege 15 secret AdminPass
+  R(config)# crypto key generate rsa modulus 2048
+  R(config)# line vty 0 4
+  R(config-line)# login local
+  R(config-line)# transport input ssh
+  R(config-line)# exit
+  R# write memory
+- Hints:
+  Use "show ip ssh" and "show running-config | include line vty" to verify.
+
+--------------------------------------------------
+Lab 13: Port Security on Switch
+- Objective:
+  Lock an access port to a single MAC address and verify violation behavior.
+- Devices:
+  1 x Switch, 2 x PC
+- Port connections:
+  PC1 Fa0 -> SW Fa0/1
+  PC2 Fa0 -> SW Fa0/2
+- Suggested steps:
+  1. Configure port-security on Fa0/1 limiting to 1 MAC, set violation action to shutdown.
+  2. Test by connecting second device to same port.
+- Sample commands (Switch):
+  SW(config)# interface fa0/1
+  SW(config-if)# switchport mode access
+  SW(config-if)# switchport access vlan 10
+  SW(config-if)# switchport port-security
+  SW(config-if)# switchport port-security maximum 1
+  SW(config-if)# switchport port-security violation shutdown
+  SW(config-if)# switchport port-security mac-address sticky
+- Hints:
+  Use "show port-security" to inspect status.
+
+--------------------------------------------------
+Lab 14: Backup and Restore Config via TFTP
+- Objective:
+  Backup running-config to TFTP server and restore it.
+- Devices:
+  1 x Router, 1 x Switch, 1 x PC (TFTP server role)
+- Port connections:
+  PC <-> Switch <-> Router
+- Suggested steps:
+  1. On PC enable TFTP server with a writable folder in Packet Tracer.
+  2. From device copy running-config tftp and restore with copy tftp running-config.
+- Sample commands (Router):
+  R# copy running-config tftp
+  Address or name of remote host []? 192.168.70.2
+  Destination filename [running-config]? backup_r1.cfg
+  R# copy tftp running-config
+- Hints:
+  Ensure PC firewall is off in real world. In Packet Tracer enable TFTP server component.
+
+--------------------------------------------------
+Lab 15: Basic Troubleshooting Practice
+- Objective:
+  Identify and fix common misconfigurations in a given small topology.
+- Devices:
+  Mix: Router, Switch, PCs (as provided in exercise)
+- Port connections:
+  As provided
+- Suggested steps:
+  1. Use show commands: show ip interface brief, show running-config, ping, traceroute.
+  2. Fix IP misconfigurations, interface shutdown, wrong VLAN assignment.
+- Sample commands:
+  show ip interface brief
+  show ip route
+  show running-config
+- Hints:
+  Systematically check physical, data-link, network layers.
+
+========================================
+LEVEL: MEDIUM (INTERMEDIATE) - 10 LABS
+========================================
+
+Lab 16: OSPF Single Area Routing
+- Objective:
+  Configure OSPF area 0 between 3 routers for dynamic routing and verify adjacency and routes.
+- Devices:
+  3 x Routers, switches, PCs
+- Port connections:
+  Mesh or chain topology between routers; each router has a LAN for PCs.
+- Suggested steps:
+  1. Configure OSPF process on each router with proper network statements.
+  2. Verify neighborship and routes with "show ip ospf neighbor" and "show ip route ospf".
+- Sample commands (Router):
+  R(config)# router ospf 1
+  R(config-router)# network 10.1.1.0 0.0.0.255 area 0
+  R(config-router)# network 10.1.2.0 0.0.0.255 area 0
+- Hints:
+  Use consistent process ID and area. Use "debug ip ospf adj" only in labs.
+
+--------------------------------------------------
+Lab 17: EIGRP Basic Configuration
+- Objective:
+  Configure EIGRP for IPv4 among routers and verify route exchange.
+- Devices:
+  3 x Routers, switches, PCs
+- Port connections:
+  Same as OSPF lab but using EIGRP.
+- Suggested steps:
+  1. Enable EIGRP with an AS number and network statements.
+  2. Verify with "show ip eigrp neighbors" and "show ip route eigrp".
+- Sample commands (Router):
+  R(config)# router eigrp 100
+  R(config-router)# network 10.0.0.0 0.0.0.255
+  R(config-router)# no auto-summary
+- Hints:
+  Match AS numbers on all routers.
+
+--------------------------------------------------
+Lab 18: Access Control Lists (Standard and Extended)
+- Objective:
+  Implement standard and extended ACLs to permit/deny traffic between networks.
+- Devices:
+  Routers, switches, PCs
+- Port connections:
+  Multiple LANs connected through a router.
+- Suggested steps:
+  1. Create standard ACL that blocks a specific host from accessing another network.
+  2. Create extended ACL that blocks HTTP but allows ICMP.
+  3. Apply ACLs inbound or outbound on router interfaces.
+- Sample commands (Standard):
+  R(config)# access-list 10 deny 192.168.3.100 0.0.0.0
+  R(config)# access-list 10 permit any
+  R(config)# interface g0/0
+  R(config-if)# ip access-group 10 in
+- Sample commands (Extended):
+  R(config)# access-list 110 permit tcp any any eq 80
+  R(config)# access-list 110 deny ip any any
+  R(config)# interface g0/1
+  R(config-if)# ip access-group 110 out
+- Hints:
+  Standard ACLs filter by source only. Order matters in extended ACLs.
+
+--------------------------------------------------
+Lab 19: NAT Overload (PAT)
+- Objective:
+  Configure PAT to allow multiple internal hosts to share a single public IP.
+- Devices:
+  1 x Router with inside and outside interfaces, PCs, switch
+- Port connections:
+  LAN -> Switch -> Router G0/0 (inside)
+  Router G0/1 -> Internet/cloud simulation (outside)
+- Suggested steps:
+  1. Configure inside and outside interfaces.
+  2. Create access-list to match local network.
+  3. Apply ip nat inside source list X interface g0/1 overload.
+- Sample commands (Router):
+  R(config)# interface g0/0
+  R(config-if)# ip address 192.168.10.1 255.255.255.0
+  R(config-if)# ip nat inside
+  R(config)# interface g0/1
+  R(config-if)# ip address 203.0.113.2 255.255.255.0
+  R(config-if)# ip nat outside
+  R(config)# access-list 1 permit 192.168.10.0 0.0.0.255
+  R(config)# ip nat inside source list 1 interface g0/1 overload
+- Hints:
+  Use "show ip nat translations" and "show ip nat statistics".
+
+--------------------------------------------------
+Lab 20: Static NAT Configuration
+- Objective:
+  Map one internal host to a public IP for services (one-to-one NAT).
+- Devices and connections:
+  Similar to PAT lab.
+- Suggested steps:
+  1. Configure ip nat inside source static 192.168.10.10 203.0.113.10
+  2. From outside host ping/ssh to public IP to test mapping.
+- Sample commands:
+  R(config)# ip nat inside source static tcp 192.168.10.10 22 203.0.113.10 22
+- Hints:
+  Useful for hosting servers behind NAT.
+
+--------------------------------------------------
+Lab 21: DHCP Relay (ip helper-address)
+- Objective:
+  Configure router to forward DHCP requests from clients on different subnets to remote DHCP server.
+- Devices:
+  1 x Router, 1 x DHCP Server (PC), switch, clients
+- Port connections:
+  DHCP Server on separate physical or simulated network; clients on LAN.
+- Suggested steps:
+  1. Configure DHCP server on one router or PC with pool for remote client network.
+  2. On remote router interface set "ip helper-address <DHCP server IP>".
+- Sample commands (Router interface):
+  R(config-if)# ip helper-address 192.168.50.5
+- Hints:
+  ip helper forwards multiple UDP services by default including DHCP.
+
+--------------------------------------------------
+Lab 22: STP and Root Bridge Verification
+- Objective:
+  Create redundant links and verify Spanning Tree Protocol behavior and root bridge selection.
+- Devices:
+  3 x Switch, PCs
+- Port connections:
+  Create triangular/trunked topology with links between switches.
+- Suggested steps:
+  1. Observe default root bridge selection using switch priorities.
+  2. Set priority to force a specific root bridge.
+- Sample commands (Switch):
+  SW(config)# spanning-tree vlan 1 priority 24576
+  SW# show spanning-tree
+- Hints:
+  Use "show spanning-tree" and "show spanning-tree detail".
+
+--------------------------------------------------
+Lab 23: EtherChannel (LACP) Setup
+- Objective:
+  Aggregate multiple physical links into one logical link using LACP.
+- Devices:
+  2 x Switch, PCs or server
+- Port connections:
+  SW1 Gi0/1 & Gi0/2 -> SW2 Gi0/1 & Gi0/2 (configure as Port-channel)
+- Suggested steps:
+  1. On both switches configure interface range and channel-group with mode active.
+  2. Configure Port-channel interface as trunk or access as needed.
+- Sample commands (Switch):
+  SW1(config)# interface range gi0/1 - 2
+  SW1(config-if-range)# channel-group 1 mode active
+  SW1(config)# interface port-channel 1
+  SW1(config-if)# switchport mode trunk
+- Hints:
+  Ensure speed/duplex and trunking match on both ends.
+
+--------------------------------------------------
+Lab 24: Inter-VLAN Routing + ACL Control
+- Objective:
+  Combine inter-vlan routing with ACLs to restrict access between VLANs.
+- Devices:
+  Router or L3 switch, 1 x Switch, PCs on multiple VLANs
+- Port connections:
+  Standard router-on-a-stick or L3 interface per VLAN
+- Suggested steps:
+  1. Configure VLANs and router or SVI interfaces.
+  2. Create ACL that blocks VLAN20 from accessing VLAN10 webserver but allows ICMP.
+  3. Apply ACL to appropriate interface direction.
+- Sample commands (ACL example):
+  R(config)# access-list 101 deny tcp 192.168.20.0 0.0.0.255 host 192.168.10.10 eq 80
+  R(config)# access-list 101 permit ip any any
+  R(config)# interface g0/0.10
+  R(config-if)# ip access-group 101 in
+- Hints:
+  Place ACL as close to source as possible.
+
+--------------------------------------------------
+Lab 25: Backup WAN Link with Floating Static Route
+- Objective:
+  Implement static route with higher administrative distance as failover when primary dynamic route fails.
+- Devices:
+  Routers with two paths to destination network.
+- Port connections:
+  Dual-path topology
+- Suggested steps:
+  1. Configure primary route via dynamic protocol or static with AD=1.
+  2. Configure floating static with higher AD (e.g., 250) to act as backup.
+- Sample commands:
+  R(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.1
+  R(config)# ip route 0.0.0.0 0.0.0.0 198.51.100.1 250
+- Hints:
+  Use "show ip route" to verify primary and floating routes.
+
+========================================
+LEVEL: HARD (ADVANCED) - 5 LABS
+========================================
+
+Lab 26: OSPF Multi-Area Configuration
+- Objective:
+  Configure OSPF with multiple areas (area 0 and area 1) across routers and verify LSDB and routes.
+- Devices:
+  4 x Routers, switches, PCs
+- Port connections:
+  Area 0 backbone connects ABR routers to area 1 routers.
+- Suggested steps:
+  1. Configure OSPF on each router with area assignment per network statement.
+  2. Configure ABR with interfaces in different areas.
+  3. Verify with "show ip ospf database" and "show ip route".
+- Sample commands (ABR):
+  R(config)# router ospf 1
+  R(config-router)# network 10.0.0.0 0.0.0.255 area 0
+  R(config-router)# network 10.1.0.0 0.0.0.255 area 1
+- Hints:
+  Area 0 must be contiguous. Use summarization on ABR if needed.
+
+--------------------------------------------------
+Lab 27: Redistribution between OSPF and EIGRP
+- Objective:
+  Configure route redistribution between OSPF and EIGRP domains and manage route tags to avoid loops.
+- Devices:
+  Multiple routers running OSPF and EIGRP
+- Port connections:
+  Routers interconnecting two protocol domains
+- Suggested steps:
+  1. Redistribute OSPF into EIGRP and EIGRP into OSPF on the connecting router(s).
+  2. Use route-maps and tags to control re-distribution and prevent feedback loops.
+- Sample commands (example):
+  R(config)# router ospf 1
+  R(config-router)# redistribute eigrp 100 subnets metric 1000 1 255 1 150
+  R(config)# router eigrp 100
+  R(config-router)# redistribute ospf 1 metric 10000 100 255 1 150
+- Hints:
+  Always redistribute subnets and consider route tagging.
+
+--------------------------------------------------
+Lab 28: HSRP/VRRP Redundancy
+- Objective:
+  Provide gateway redundancy for a subnet using HSRP or VRRP and test failover.
+- Devices:
+  2 x Routers (or multilayer switches), 1 x Switch, PCs
+- Port connections:
+  Two routers connect to same LAN switch.
+- Suggested steps:
+  1. Configure HSRP on both routers and set priorities. Verify virtual IP.
+  2. Simulate failure of active router and verify standby takes over.
+- Sample commands (HSRP):
+  R1(config)# interface g0/0
+  R1(config-if)# ip address 192.168.100.2 255.255.255.0
+  R1(config-if)# standby 1 ip 192.168.100.1
+  R1(config-if)# standby 1 priority 120
+  R1(config-if)# standby 1 preempt
+  R2(config)# interface g0/0
+  R2(config-if)# ip address 192.168.100.3 255.255.255.0
+  R2(config-if)# standby 1 ip 192.168.100.1
+- Hints:
+  Use "show standby" or "show vrrp" to inspect status.
+
+--------------------------------------------------
+Lab 29: Site-to-Site VPN Simulation (IPsec)
+- Objective:
+  Configure a basic IPsec site-to-site VPN between two routers to encrypt traffic between two networks.
+- Devices:
+  2 x Routers, 2 x LANs, switches, PCs
+- Port connections:
+  Each router connects to its LAN and to the simulated WAN link between routers.
+- Suggested steps:
+  1. Configure ISAKMP policy, pre-shared keys, transform-set, crypto map and apply to WAN interface.
+  2. Verify with "show crypto isakmp sa" and "show crypto ipsec sa".
+- Sample commands (simplified):
+  R(config)# crypto isakmp policy 10
+  R(config-isakmp)# encr aes
+  R(config-isakmp)# hash sha
+  R(config-isakmp)# authentication pre-share
+  R(config)# crypto isakmp key MySecretKey address 198.51.100.2
+  R(config)# crypto ipsec transform-set TS esp-aes esp-sha-hmac
+  R(config)# crypto map CMAP 10 ipsec-isakmp
+  R(config-crypto-map)# set peer 198.51.100.2
+  R(config-crypto-map)# set transform-set TS
+  R(config-crypto-map)# match address 101
+  R(config)# interface g0/0
+  R(config-if)# ip address 198.51.100.1 255.255.255.0
+  R(config-if)# crypto map CMAP
+- Hints:
+  IPsec can be complex. Use debug commands only in lab.
+
+--------------------------------------------------
+Lab 30: IPv6 Dual Stack Implementation
+- Objective:
+  Implement IPv6 addressing alongside IPv4 on a small network and test IPv6 connectivity.
+- Devices:
+  Routers, switches, PCs with IPv6 enabled
+- Port connections:
+  Standard LAN connections
+- Suggested steps:
+  1. Assign IPv6 addresses to router interfaces and PCs.
+  2. Enable IPv6 routing on routers with "ipv6 unicast-routing".
+  3. Test "ping ipv6" between hosts.
+- Sample commands (Router):
+  R(config)# ipv6 unicast-routing
+  R(config)# interface g0/0
+  R(config-if)# ipv6 address 2001:db8:1::1/64
+  R(config-if)# no shutdown
+  R# show ipv6 route
+- Hints:
+  Remember IPv6 link-local addresses and "ping ipv6".
+
+========================================
+FINAL PROJECT - REALISTIC AND HARD
+========================================
+
+Final Project: Mid-Size Enterprise Network Simulation (Sales, HR, IT)
+- Objective:
+  Design and implement a functioning enterprise network with segmentation, routing, redundancy and security.
+- Requirements / Devices:
+  - 3 x Routers (Edge, Core), 2 x Layer3 Switches (SVI-capable), 4 x Layer2 Switches, 20+ PCs, 2 x Servers (DNS/DHCP/HTTP), 1 x Firewall device (optional), Internet cloud simulation
+- Topology and Port connections (simple ASCII diagram):
+  [Internet Cloud]
+        |
+     Edge Router (R1) Gi0/0 (public)
+        |
+     Core Router (R2) Gi0/0
+      /       L3-SW1   L3-SW2
+  / | \     / |  Sales HR IT DMZ  (multiple access switches and PCs)
+- Suggested steps (high level):
+  1. Plan IP addressing for each VLAN and management network. Use private addressing and document subnets.
+  2. Create VLANs for Sales, HR, IT, DMZ. Configure trunking and SVI on L3 switches or use router-on-a-stick.
+  3. Configure inter-VLAN routing on L3 switches or routers. Implement ACLs to restrict access (e.g., HR cannot access Sales file server).
+  4. Configure DHCP scopes for each VLAN. Use DHCP relay if DHCP server is in DMZ.
+  5. Implement OSPF between core and edge for dynamic routing. Advertise internal networks to edge with NAT/PAT for Internet access.
+  6. Configure NAT/PAT on Edge router for Internet-bound traffic. Add static NAT for DMZ web server.
+  7. Implement redundancy: HSRP between two core routers or use STP and EtherChannel between core switches.
+  8. Secure devices: SSH, disable unused services, configure port-security on access ports, enable logging.
+  9. Configure DNS and HTTP servers in DMZ. Verify name resolution and web access from internal VLANs (based on ACL rules).
+  10. Test failover by simulating device/links down. Test all services and document results.
+- Sample commands (selected snippets):
+  # L3 switch SVI
+  SW(config)# interface vlan 10
+  SW(config-if)# ip address 10.10.10.1 255.255.255.0
+  SW(config-if)# no shutdown
+  # DHCP server sample (router)
+  R(config)# ip dhcp pool SALES
+  R(dhcp-config)# network 10.10.10.0 255.255.255.0
+  R(dhcp-config)# default-router 10.10.10.1
+  # HSRP sample on two routers
+  R1(config-if)# standby 1 ip 10.10.10.254
+  R2(config-if)# standby 1 ip 10.10.10.254
+  # NAT/PAT on Edge
+  Edge(config)# interface g0/0
+  Edge(config-if)# ip address 203.0.113.2 255.255.255.0
+  Edge(config-if)# ip nat outside
+  Edge(config)# interface g0/1
+  Edge(config-if)# ip address 10.0.0.1 255.255.255.0
+  Edge(config-if)# ip nat inside
+  Edge(config)# access-list 1 permit 10.0.0.0 0.255.255.255
+  Edge(config)# ip nat inside source list 1 interface g0/0 overload
+- Deliverables:
+  1. Packet Tracer .pkt file with full config.
+  2. Network documentation: IP plan, VLAN list, ACL policies, routing plan.
+  3. Test log showing connectivity, NAT translations, ACL tests, failover tests.
+- Hints:
+  Break the project into modules. Build core services first. Document as you configure.
+
+========================================
+END OF FILE
+========================================
