@@ -17,9 +17,9 @@ This repository contains a collection of Packet Tracer labs designed for network
 
 This repository is intended for students and networking enthusiasts who want to improve their hands-on skills with Cisco Packet Tracer. The labs and questions are designed to cover fundamental and advanced networking topics, making this a useful resource for exam preparation and general learning.
 
-##UPDATE:
-- lab1(10/10/2025): simple ping accross end-devices with static IP
-- lab2(10/10/2025): setting up hostname, UserAccessVerification password and EnableCLI password on protected Switch1,remote config using PC (RS232 <--> console with cyan console cabble connection) 
+## UPDATE:
+#### lab1(10/10/2025): simple ping accross end-devices with static IP
+#### lab2(10/10/2025): setting up hostname, UserAccessVerification password and EnableCLI password on protected Switch1,remote config using PC (RS232 <--> console with cyan console cabble connection) 
 
 ## Author
 
