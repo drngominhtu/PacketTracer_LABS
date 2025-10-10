@@ -20,6 +20,7 @@ This repository is intended for students and networking enthusiasts who want to 
 ## UPDATE:
 #### lab1(10/10/2025): simple ping accross end-devices with static IP
 #### lab2(10/10/2025): setting up hostname, UserAccessVerification password and EnableCLI password on protected Switch1,remote config using PC (RS232 <--> console with cyan console cabble connection) 
+#### lab3(10/10/2025): config router GE0/0/0 and GE0/0/1 ports, creating 2 IP interfaces for each port, connecting SW and ED below, ping accross
 
 ## Author
 
