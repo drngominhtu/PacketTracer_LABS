@@ -1,4 +1,8 @@
 # PacketTracer_LABS
+<p align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/en/d/dc/Cisco_Packet_Tracer_Icon.png" width="70" alt="Packet Tracer Logo"> LABS
+</p>
+
 
 This repository contains a collection of Packet Tracer labs designed for networking practice and skill development. Each lab comes with a set of accompanying questions to help reinforce key concepts and test your understanding.
 
